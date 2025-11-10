@@ -11,11 +11,17 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CHART_GEN_DIR = os.path.join(BASE_DIR, "Chart-Generation-using-LLMs")
 if CHART_GEN_DIR not in sys.path:
     sys.path.append(CHART_GEN_DIR)
-from endtoend import pdf_to_mermaid_complete, text_to_mermaid_complete
-from summary_refined import PDFSummarizer
-# Note: import mermaid_code lazily inside endpoints to avoid import-time
-# failures when model SDKs (e.g., mistralai) are not installed in the
-# execution environment.
+
+# Import with error handling for better debugging
+try:
+    from endtoend import pdf_to_mermaid_complete, text_to_mermaid_complete
+    from summary_refined import PDFSummarizer
+except ImportError as e:
+    print(f"Import error: {e}")
+    print(f"BASE_DIR: {BASE_DIR}")
+    print(f"CHART_GEN_DIR: {CHART_GEN_DIR}")
+    print(f"sys.path: {sys.path}")
+    raise
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for React frontend
@@ -165,7 +171,18 @@ def process_text():
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    return jsonify({'status': 'healthy'})
+    """Health check endpoint with environment info"""
+    import sys
+    return jsonify({
+        'status': 'healthy',
+        'python_version': sys.version,
+        'base_dir': BASE_DIR,
+        'chart_gen_dir': CHART_GEN_DIR,
+        'modules_loaded': {
+            'endtoend': 'pdf_to_mermaid_complete' in dir(),
+            'summary_refined': 'PDFSummarizer' in dir()
+        }
+    })
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
