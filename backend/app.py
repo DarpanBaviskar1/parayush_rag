@@ -6,9 +6,11 @@ import sys
 import traceback
 import re
 
-# Add the path to your endtoend.py script
-
-sys.path.append("./Chart-Generation-using-LLMs")
+# Ensure project-local modules resolve when running in serverless contexts
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CHART_GEN_DIR = os.path.join(BASE_DIR, "Chart-Generation-using-LLMs")
+if CHART_GEN_DIR not in sys.path:
+    sys.path.append(CHART_GEN_DIR)
 from endtoend import pdf_to_mermaid_complete, text_to_mermaid_complete
 from summary_refined import PDFSummarizer
 # Note: import mermaid_code lazily inside endpoints to avoid import-time
