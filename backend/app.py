@@ -8,7 +8,7 @@ import re
 
 # Add the path to your endtoend.py script
 
-sys.path.append("/home/darpan/Desktop/Blockdiagram/Chart-Generation-using-LLMs")
+sys.path.append("./Chart-Generation-using-LLMs")
 from endtoend import pdf_to_mermaid_complete, text_to_mermaid_complete
 from summary_refined import PDFSummarizer
 # Note: import mermaid_code lazily inside endpoints to avoid import-time
@@ -166,4 +166,4 @@ def health_check():
     return jsonify({'status': 'healthy'})
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)
